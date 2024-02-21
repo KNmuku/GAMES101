@@ -1,0 +1,3 @@
+/home/muku/csdiy/games101/hw0/build/CMakeFiles/Transformation.dir
+/home/muku/csdiy/games101/hw0/build/CMakeFiles/edit_cache.dir
+/home/muku/csdiy/games101/hw0/build/CMakeFiles/rebuild_cache.dir
