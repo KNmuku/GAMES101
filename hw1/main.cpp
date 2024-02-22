@@ -53,26 +53,33 @@ Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio,
     float bot   = -top;
     float right = top * aspect_ratio;
     float left  = -right; 
+    float n     = -zNear;
+    float f     = -zFar;
 
     Eigen::Matrix4f persp_to_ortho;
     Eigen::Matrix4f translate;
     Eigen::Matrix4f scale;
     Eigen::Matrix4f ortho;
-    persp_to_ortho << zNear, 0, 0, 0,
-                      0, zNear, 0, 0,
-                      0, 0, (zNear + zFar), (-zNear) * zFar,
+    Eigen::Matrix4f reflect;
+    persp_to_ortho << n, 0, 0, 0,
+                      0, n, 0, 0,
+                      0, 0, (n + f), -n * f,
                       0, 0, 1, 0;
     translate   <<    1, 0, 0, -(left + right) / 2.f,
                       0, 1, 0, -(bot + top) / 2.f,
-                      0, 0, 1, -(zNear + zFar) / 2.f,
+                      0, 0, 1, -(n + f) / 2.f,
                       0, 0, 0, 1;
     scale     <<      2.f/(right-left), 0, 0, 0,
                       0, 2.f/(top-bot), 0, 0,
-                      0, 0, 2.f/(zNear-zFar), 0,
+                      0, 0, 2.f/(n - f), 0,
+                      0, 0, 0, 1;
+    reflect   <<      1, 0, 0, 0,
+                      0, 1, 0, 0,
+                      0, 0, -1, 0,
                       0, 0, 0, 1;
 
     ortho = scale * translate;
-    projection = ortho * persp_to_ortho * projection;
+    projection = reflect * ortho * persp_to_ortho * projection;
     return projection;
 }
 
@@ -147,13 +154,14 @@ int main(int argc, const char** argv)
         r.clear(rst::Buffers::Color | rst::Buffers::Depth);
 
         
-        //float ang = 45.f/180.f * MY_PI;
-        //Vector3f n;
-        //n << 0, -sin(ang), cos(ang);
-        //r.set_model(get_rotation(n, angle));
+        // float ang = 45.f/180.f * MY_PI;
+        // Vector3f n;
+        // n << 0, -sin(ang), cos(ang);
+        // r.set_model(get_rotation(n, angle));
+        
         r.set_model(get_model_matrix(angle));
         r.set_view(get_view_matrix(eye_pos));
-        r.set_projection(get_projection_matrix(45, 1, -0.1, -50)); // change zNear & zFar to be negative
+        r.set_projection(get_projection_matrix(45, 1, 0.1, 50)); // change zNear & zFar to be negative
 
         r.draw(pos_id, ind_id, rst::Primitive::Triangle);
 
