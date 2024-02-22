@@ -78,6 +78,7 @@ namespace rst
         void draw_line(Eigen::Vector3f begin, Eigen::Vector3f end);
 
         void rasterize_triangle(const Triangle& t);
+        
 
         // VERTEX SHADER -> MVP -> Clipping -> /.W -> VIEWPORT -> DRAWLINE/DRAWTRI -> FRAGSHADER
 
@@ -97,6 +98,7 @@ namespace rst
 
         int width, height;
 
+        // next_id of buffer: pos_buf = 0, ind_buf = 1, col_buf = 2;
         int next_id = 0;
         int get_next_id() { return next_id++; }
     };

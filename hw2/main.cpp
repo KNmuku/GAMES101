@@ -5,6 +5,8 @@
 #include "global.hpp"
 #include "Triangle.hpp"
 
+using namespace std;
+
 constexpr double MY_PI = 3.1415926;
 
 Eigen::Matrix4f get_view_matrix(Eigen::Vector3f eye_pos)
@@ -31,8 +33,43 @@ Eigen::Matrix4f get_model_matrix(float rotation_angle)
 Eigen::Matrix4f get_projection_matrix(float eye_fov, float aspect_ratio, float zNear, float zFar)
 {
     // TODO: Copy-paste your implementation from the previous assignment.
-    Eigen::Matrix4f projection;
+    Eigen::Matrix4f projection = Eigen::Matrix4f::Identity();
 
+    // TODO: Implement this function
+    // Create the projection matrix for the given parameters.
+    // Then return it.
+    float radian_fov = eye_fov / 180.f * MY_PI;
+    float top   = abs(zNear) * tan(radian_fov / 2);
+    float bot   = -top;
+    float right = top * aspect_ratio;
+    float left  = -right; 
+    float n     = -zNear;
+    float f     = -zFar;
+
+    Eigen::Matrix4f persp_to_ortho;
+    Eigen::Matrix4f translate;
+    Eigen::Matrix4f scale;
+    Eigen::Matrix4f ortho;
+    Eigen::Matrix4f reflect;
+    persp_to_ortho << n, 0, 0, 0,
+                      0, n, 0, 0,
+                      0, 0, (n + f), -n * f,
+                      0, 0, 1, 0;
+    translate   <<    1, 0, 0, -(left + right) / 2.f,
+                      0, 1, 0, -(bot + top) / 2.f,
+                      0, 0, 1, -(n + f) / 2.f,
+                      0, 0, 0, 1;
+    scale     <<      2.f/(right-left), 0, 0, 0,
+                      0, 2.f/(top-bot), 0, 0,
+                      0, 0, 2.f/(n - f), 0,
+                      0, 0, 0, 1;
+    reflect   <<      1, 0, 0, 0,
+                      0, 1, 0, 0,
+                      0, 0, -1, 0,
+                      0, 0, 0, 1;
+
+    ortho = scale * translate;
+    projection = reflect * ortho * persp_to_ortho * projection;
     return projection;
 }
 
@@ -111,8 +148,12 @@ int main(int argc, const char** argv)
         r.set_model(get_model_matrix(angle));
         r.set_view(get_view_matrix(eye_pos));
         r.set_projection(get_projection_matrix(45, 1, 0.1, 50));
-
+        
+        try {
         r.draw(pos_id, ind_id, col_id, rst::Primitive::Triangle);
+        } catch (out_of_range & ex) {
+          cout << ex.what() << endl;
+        }
 
         cv::Mat image(700, 700, CV_32FC3, r.frame_buffer().data());
         image.convertTo(image, CV_8UC3, 1.0f);
