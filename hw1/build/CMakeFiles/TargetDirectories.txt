@@ -1,3 +1,0 @@
-/home/muku/csdiy/games101/hwrepo/hw1/build/CMakeFiles/Rasterizer.dir
-/home/muku/csdiy/games101/hwrepo/hw1/build/CMakeFiles/edit_cache.dir
-/home/muku/csdiy/games101/hwrepo/hw1/build/CMakeFiles/rebuild_cache.dir

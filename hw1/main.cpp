@@ -154,12 +154,13 @@ int main(int argc, const char** argv)
         r.clear(rst::Buffers::Color | rst::Buffers::Depth);
 
         
-        // float ang = 45.f/180.f * MY_PI;
-        // Vector3f n;
-        // n << 0, -sin(ang), cos(ang);
-        // r.set_model(get_rotation(n, angle));
+        // rotate around random axis n.
+        float ang = 45.f/180.f * MY_PI;
+        Vector3f n;
+        n << 0, -sin(ang), cos(ang);
+        r.set_model(get_rotation(n, angle));
         
-        r.set_model(get_model_matrix(angle));
+        // r.set_model(get_model_matrix(angle));
         r.set_view(get_view_matrix(eye_pos));
         r.set_projection(get_projection_matrix(45, 1, 0.1, 50)); // change zNear & zFar to be negative
 
