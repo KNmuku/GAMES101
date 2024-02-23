@@ -7,6 +7,7 @@
 #include <eigen3/Eigen/Eigen>
 #include <algorithm>
 #include "global.hpp"
+#include <array>
 #include "Triangle.hpp"
 using namespace Eigen;
 
@@ -72,12 +73,18 @@ namespace rst
 
         void draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf_id col_buffer, Primitive type);
 
-        std::vector<Eigen::Vector3f>& frame_buffer() { return frame_buf; }
+        std::vector<Eigen::Vector3f>& frame_buffer() { return frame_buf; } 
 
     private:
         void draw_line(Eigen::Vector3f begin, Eigen::Vector3f end);
 
-        void rasterize_triangle(const Triangle& t);
+        static bool insideTriangle(float x, float y, const std::array<Vector4f,3>& _v);
+
+        // modified for MSAA
+        void msaa_rasterize_triangle(const Triangle& t);
+
+        // added for MSAA
+        void msaa_merge();
         
 
         // VERTEX SHADER -> MVP -> Clipping -> /.W -> VIEWPORT -> DRAWLINE/DRAWTRI -> FRAGSHADER
@@ -94,6 +101,13 @@ namespace rst
         std::vector<Eigen::Vector3f> frame_buf;
 
         std::vector<float> depth_buf;
+
+        // added fot MSAA
+        std::vector<std::array<Eigen::Vector3f, 4>> msaa_frame_buf;
+  
+        // add for MSAA
+        std::vector<std::array<float, 4>> msaa_depth_buf;
+
         int get_index(int x, int y);
 
         int width, height;
