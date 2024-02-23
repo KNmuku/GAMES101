@@ -177,10 +177,8 @@ void rst::rasterizer::msaa_rasterize_triangle(const Triangle& t) {
         float y_sample = y + samples.at(i).y_offset;
         if (insideTriangle(x_sample, y_sample, v4array)) {
           auto[alpha, beta, gamma] = computeBarycentric2D(x_sample, y_sample, t.v);
-          float w_reciprocal = 1.0/(alpha / v4array[0].w() + beta / v4array[1].w() + gamma / v4array[2].w());
-          float z_interpolated = alpha * v4array[0].z() / v4array[0].w() + beta * v4array[1].z() / v4array[1].w()
-                                + gamma * v4array[2].z() / v4array[2].w();
-          z_interpolated *= w_reciprocal;
+
+          float z_interpolated = 1.f / (alpha/v4array[0].z() + beta/v4array[1].z() + gamma/v4array[2].z());
          
           int index = get_index(x, y); 
           if (z_interpolated < msaa_depth_buf.at(index).at(i)) {
