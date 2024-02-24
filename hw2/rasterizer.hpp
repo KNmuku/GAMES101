@@ -81,7 +81,7 @@ namespace rst
         static bool insideTriangle(float x, float y, const std::array<Vector4f,3>& _v);
 
         // modified for MSAA
-        void msaa_rasterize_triangle(const Triangle& t);
+        void msaa_rasterize_triangle(const Triangle& t, const std::array<Vector3f, 3> & viewspace_pos);
 
         // added for MSAA
         void msaa_merge();

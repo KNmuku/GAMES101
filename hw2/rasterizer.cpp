@@ -91,6 +91,12 @@ void rst::rasterizer::draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf
     for (auto& i : ind)
     {
         Triangle t;
+        std::array<Eigen::Vector3f, 3> viewspace_pos {
+            (view * model * to_vec4(buf[i[0]], 1.f)).head<3>(),
+            (view * model * to_vec4(buf[i[1]], 1.f)).head<3>(), 
+            (view * model * to_vec4(buf[i[2]], 1.f)).head<3>()
+        };
+
         Eigen::Vector4f v[] = {
                 mvp * to_vec4(buf[i[0]], 1.0f),
                 mvp * to_vec4(buf[i[1]], 1.0f),
@@ -111,8 +117,6 @@ void rst::rasterizer::draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf
         for (int j = 0; j < 3; ++j)
         {
             t.setVertex(j, v[j].head<3>());
-            //t.setVertex(i, v[i].head<3>());
-            //t.setVertex(i, v[i].head<3>());
         }
 
         auto col_x = col[i[0]];
@@ -123,7 +127,7 @@ void rst::rasterizer::draw(pos_buf_id pos_buffer, ind_buf_id ind_buffer, col_buf
         t.setColor(1, col_y[0], col_y[1], col_y[2]);
         t.setColor(2, col_z[0], col_z[1], col_z[2]);
 
-        msaa_rasterize_triangle(t);
+        msaa_rasterize_triangle(t, viewspace_pos);
     }
 
     msaa_merge();
@@ -146,7 +150,7 @@ struct msaa_sample {
 };
 
 //Screen space rasterization
-void rst::rasterizer::msaa_rasterize_triangle(const Triangle& t) {
+void rst::rasterizer::msaa_rasterize_triangle(const Triangle& t, const array<Vector3f, 3> & viewspace_pos) {
   std::array<Vector4f, 3> v4array = t.toVector4();
     
   // TODO : Find out the bounding box of current triangle.
@@ -178,7 +182,7 @@ void rst::rasterizer::msaa_rasterize_triangle(const Triangle& t) {
         if (insideTriangle(x_sample, y_sample, v4array)) {
           auto[alpha, beta, gamma] = computeBarycentric2D(x_sample, y_sample, t.v);
 
-          float z_interpolated = 1.f / (alpha/v4array[0].z() + beta/v4array[1].z() + gamma/v4array[2].z());
+          float z_interpolated = 1.f / (alpha/(-viewspace_pos[0].z()) + beta/(-viewspace_pos[1].z()) + gamma/(-viewspace_pos[2].z()));
          
           int index = get_index(x, y); 
           if (z_interpolated < msaa_depth_buf.at(index).at(i)) {
