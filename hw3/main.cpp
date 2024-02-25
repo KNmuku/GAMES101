@@ -162,7 +162,7 @@ Vector3f texture_fragment_shader(const fragment_shader_payload& payload)
     if (payload.texture)
     {
         // TODO: Get the texture value at the texture coordinates of the current fragment
-      return_color = payload.texture->getColorBilinear(payload.tex_coords.x(),
+      return_color = payload.texture->getColor(payload.tex_coords.x(),
                                                 payload.tex_coords.y());
     }
     Vector3f texture_color;
@@ -432,7 +432,7 @@ int main(int argc, const char** argv)
         {
             cout << "Rasterizing using the texture shader\n";
             active_shader = texture_fragment_shader;
-            texture_path = "spot_texture_comp.png";
+            texture_path = "spot_texture.png";
             r.set_texture(Texture(obj_path + texture_path));
         }
         else if (argc == 3 && string(argv[2]) == "normal")

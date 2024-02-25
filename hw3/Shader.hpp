@@ -21,8 +21,6 @@ struct fragment_shader_payload
     fragment_shader_payload(const Eigen::Vector3f& view_pos, const Eigen::Vector3f& col, const Eigen::Vector3f& nor,const Eigen::Vector2f& tc, Texture* tex) :
          view_pos(view_pos), color(col), normal(nor), tex_coords(tc), texture(tex) {}
    
-    std::array<Eigen::Vector2f, 3> vertices_tex_coords;
-    std::array<Eigen::Vector3f, 3> vertices;
     Eigen::Vector3f view_pos;
     Eigen::Vector3f color;
     Eigen::Vector3f normal;

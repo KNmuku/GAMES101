@@ -310,19 +310,38 @@ void rst::rasterizer::rasterize_triangle(const Triangle& t, const array<Vector3f
         float z_interp = 1.f / (alpha / d0 + beta / d1 + gamma / d2);
         int index = get_index(x, y);
         if (z_interp < depth_buf[get_index(x, y)]) {
-          depth_buf[index] = z_interp;//更新z值
+          depth_buf[index] = z_interp;
           
           Vector4f ds{d0, d1, d2, z_interp};
           auto color_interp = interpolate(ds, alpha, beta, gamma, t.color[0], t.color[1], t.color[2], 1);
-          // shading frequency: phong shading
+          // ---------------------------------|
+          // shading frequency: phong shading |
+          /* ---------------------------------|
           auto normal_interp = interpolate(ds, alpha, beta, gamma, t.normal[0], t.normal[1], t.normal[2], 1);
           normal_interp.normalize();
           auto tex_coord_interp = interpolate(ds, alpha, beta, gamma, t.tex_coords[0], t.tex_coords[1], t.tex_coords[2], 1);
           auto view_pos_interp = interpolate(ds, alpha, beta, gamma, view_pos[0], view_pos[1], view_pos[2], 1);
           fragment_shader_payload payload(view_pos_interp, color_interp, normal_interp, tex_coord_interp, texture ? &*texture : nullptr);
-          payload.vertices = view_pos;
-          payload.vertices_tex_coords = {t.tex_coords[0], t.tex_coords[1], t.tex_coords[2]}; 
+          auto pixel_color = fragment_shader(payload);*/
+          // -----------------------------------|
+          // shading frequency: gouraud shading |
+          // -----------------------------------|
+          array<Vector3f, 3> vts_colors;
+          for (int i = 0; i < 3; ++i) {
+            fragment_shader_payload payload(view_pos[i], t.color[i], t.normal[i], t.tex_coords[i], texture ? &*texture : nullptr);
+            vts_colors.at(i) = fragment_shader(payload);
+          }
+          auto pixel_color = interpolate(ds, alpha, beta, gamma, vts_colors.at(0), vts_colors.at(1), vts_colors.at(2), 1);
+          //
+          // --------------------------------|
+          // shading frequency: flat shading |
+          /* --------------------------------|
+          Vector3f BC = view_pos[2] - view_pos[1];
+          Vector3f BA = view_pos[0] - view_pos[1];
+          Vector3f normal = (BC).cross(BA).normalized();
+          fragment_shader_payload payload(view_pos[0], t.color[0], normal, t.tex_coords[0], texture ? &*texture : nullptr);
           auto pixel_color = fragment_shader(payload);
+          */
           set_pixel({(float) x, (float) y}, pixel_color); //设置颜色
         }
       }
