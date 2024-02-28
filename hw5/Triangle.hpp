@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Object.hpp"
-
+#include "Vector.hpp"
+#include <memory>
 #include <cstring>
 
 bool rayTriangleIntersect(const Vector3f& v0, const Vector3f& v1, const Vector3f& v2, const Vector3f& orig,
@@ -11,6 +12,20 @@ bool rayTriangleIntersect(const Vector3f& v0, const Vector3f& v1, const Vector3f
     // that's specified bt v0, v1 and v2 intersects with the ray (whose
     // origin is *orig* and direction is *dir*)
     // Also don't forget to update tnear, u and v.
+    Vector3f E1 = v1 - v0;
+    Vector3f E2 = v2 - v0;
+    Vector3f S  = orig - v0;
+    Vector3f S1 = crossProduct(dir, E2);
+    Vector3f S2 = crossProduct(S, E1);
+    float fractional = 1.f / dotProduct(S1, E1);
+    Vector3f Cram = Vector3f(dotProduct(S2, E2), dotProduct(S1, S), dotProduct(S2, dir));
+    Vector3f solution = fractional * Cram;
+    tnear = solution.x;
+    u     = solution.y;
+    v     = solution.z;
+    if (tnear >= 0 && u >= 0 && v >= 0 && (1 - u - v) >= 0) {
+        return true;
+    }
     return false;
 }
 
@@ -20,9 +35,10 @@ public:
     MeshTriangle(const Vector3f* verts, const uint32_t* vertsIndex, const uint32_t& numTris, const Vector2f* st)
     {
         uint32_t maxIndex = 0;
-        for (uint32_t i = 0; i < numTris * 3; ++i)
+        for (uint32_t i = 0; i < numTris * 3; ++i) {
             if (vertsIndex[i] > maxIndex)
                 maxIndex = vertsIndex[i];
+        }
         maxIndex += 1;
         vertices = std::unique_ptr<Vector3f[]>(new Vector3f[maxIndex]);
         memcpy(vertices.get(), verts, sizeof(Vector3f) * maxIndex);
@@ -71,6 +87,7 @@ public:
         st = st0 * (1 - uv.x - uv.y) + st1 * uv.x + st2 * uv.y;
     }
 
+    //实现斑马条纹
     Vector3f evalDiffuseColor(const Vector2f& st) const override
     {
         float scale = 5;

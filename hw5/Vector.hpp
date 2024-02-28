@@ -30,6 +30,7 @@ public:
         return Vector3f(x / r, y / r, z / r);
     }
 
+    // element-wise product 
     Vector3f operator*(const Vector3f& v) const
     {
         return Vector3f(x * v.x, y * v.y, z * v.z);

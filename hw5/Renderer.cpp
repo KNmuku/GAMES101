@@ -121,6 +121,11 @@ std::optional<hit_payload> trace(
 // If the surface is diffuse/glossy we use the Phong illumation model to compute the color
 // at the intersection point.
 // [/comment]
+//
+// [/my comment]
+// invariant: 1. the direction of eye ray is from eye to hitPoint;
+//            2. the start point of normal/reflection/refraction is hitPoint;
+//            3. the direction of shadow ray / light ray is from light to hitPoint.          
 Vector3f castRay(
         const Vector3f &orig, const Vector3f &dir, const Scene& scene,
         int depth)
@@ -170,6 +175,7 @@ Vector3f castRay(
                 // is composed of a diffuse and a specular reflection component.
                 // [/comment]
                 Vector3f lightAmt = 0, specularColor = 0;
+                // Note: Don't change these signs. 
                 Vector3f shadowPointOrig = (dotProduct(dir, N) < 0) ?
                                            hitPoint + N * scene.epsilon :
                                            hitPoint - N * scene.epsilon;
@@ -229,6 +235,10 @@ void Renderer::Render(const Scene& scene)
             // vector that passes through it.
             // Also, don't forget to multiply both of them with the variable *scale*, and
             // x (horizontal) variable with the *imageAspectRatio*            
+            float top = scale * 1; 
+            float right = top * imageAspectRatio;
+            x = (i - scene.width / 2.f) * (2.f * right) / scene.width;
+            y = ((scene.height - 1 - j) - scene.height / 2.f) * (2.f * top) / scene.height;
 
             Vector3f dir = Vector3f(x, y, -1); // Don't forget to normalize this direction!
             framebuffer[m++] = castRay(eye_pos, dir, scene, 0);

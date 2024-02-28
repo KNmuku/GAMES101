@@ -3,9 +3,9 @@
 
 struct hit_payload
 {
-    float tNear;
-    uint32_t index;
-    Vector2f uv;
+    float tNear;     
+    uint32_t index; // the index of triangle
+    Vector2f uv;    // barycentic coods
     Object* hit_obj;
 };
 
