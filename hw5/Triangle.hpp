@@ -17,13 +17,11 @@ bool rayTriangleIntersect(const Vector3f& v0, const Vector3f& v1, const Vector3f
     Vector3f S  = orig - v0;
     Vector3f S1 = crossProduct(dir, E2);
     Vector3f S2 = crossProduct(S, E1);
-    float fractional = 1.f / dotProduct(S1, E1);
-    Vector3f Cram = Vector3f(dotProduct(S2, E2), dotProduct(S1, S), dotProduct(S2, dir));
-    Vector3f solution = fractional * Cram;
-    tnear = solution.x;
-    u     = solution.y;
-    v     = solution.z;
-    if (tnear >= 0 && u >= 0 && v >= 0 && (1 - u - v) >= 0) {
+    float denominator = dotProduct(S1, E1);
+    tnear = dotProduct(S2, E2) / denominator;
+    u     = dotProduct(S1, S) / denominator;
+    v     = dotProduct(S2, dir) / denominator;
+    if (tnear > 0 && u >= 0 && v >= 0 && (1 - u - v) >= 0) {
         return true;
     }
     return false;

@@ -132,6 +132,7 @@ Vector3f castRay(
 {
     if (depth > scene.maxDepth) {
         return Vector3f(0.0,0.0,0.0);
+        //return scene.backgroundColor;
     }
 
     Vector3f hitColor = scene.backgroundColor;
@@ -237,7 +238,7 @@ void Renderer::Render(const Scene& scene)
             // x (horizontal) variable with the *imageAspectRatio*            
             float top = scale * 1; 
             float right = top * imageAspectRatio;
-            x = (i - scene.width / 2.f) * (2.f * right) / scene.width;
+            x = (i + .5f - scene.width / 2.f) * (2.f * right) / scene.width;
             y = ((scene.height - 1 - j) - scene.height / 2.f) * (2.f * top) / scene.height;
 
             Vector3f dir = Vector3f(x, y, -1); // Don't forget to normalize this direction!
