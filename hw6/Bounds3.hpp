@@ -68,6 +68,8 @@ class Bounds3
 
     bool Overlaps(const Bounds3& b1, const Bounds3& b2)
     {
+        // same logic: max(b1.pMin.x, b2.pMin.x) <= min(b1.pMax.x, b2.pMax.x)
+        // below is in motion view
         bool x = (b1.pMax.x >= b2.pMin.x) && (b1.pMin.x <= b2.pMax.x);
         bool y = (b1.pMax.y >= b2.pMin.y) && (b1.pMin.y <= b2.pMax.y);
         bool z = (b1.pMax.z >= b2.pMin.z) && (b1.pMin.z <= b2.pMax.z);

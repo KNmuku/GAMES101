@@ -342,7 +342,7 @@ void rst::rasterizer::rasterize_triangle(const Triangle& t, const array<Vector3f
           fragment_shader_payload payload(view_pos[0], t.color[0], normal, t.tex_coords[0], texture ? &*texture : nullptr);
           auto pixel_color = fragment_shader(payload);
           */
-          set_pixel({(float) x, (float) y}, pixel_color); //设置颜色
+          set_pixel({(float) x, (float) y}, pixel_color); // set pixel color
         }
       }
     }

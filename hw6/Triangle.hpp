@@ -20,6 +20,7 @@ bool rayTriangleIntersect(const Vector3f& v0, const Vector3f& v1,
     if (det == 0 || det < 0)
         return false;
 
+    
     Vector3f tvec = orig - v0;
     u = dotProduct(tvec, pvec);
     if (u < 0 || u > det)
@@ -30,6 +31,7 @@ bool rayTriangleIntersect(const Vector3f& v0, const Vector3f& v1,
     if (v < 0 || u + v > det)
         return false;
 
+    // conserve overhead 
     float invDet = 1 / det;
 
     tnear = dotProduct(edge2, qvec) * invDet;
