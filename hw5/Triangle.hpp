@@ -24,12 +24,12 @@ bool rayTriangleIntersect(const Vector3f& v0, const Vector3f& v1, const Vector3f
     
     Vector3f tvec = orig - v0;
     u = dotProduct(tvec, pvec);
-    if (u < 0 || u > det)
+    if (u <= 0 || u >= det)
         return false;
 
     Vector3f qvec = crossProduct(tvec, edge1);
     v = dotProduct(dir, qvec);
-    if (v < 0 || u + v > det)
+    if (v <= 0 || u + v >= det)
         return false;
 
     // conserve overhead 

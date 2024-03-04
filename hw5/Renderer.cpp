@@ -242,7 +242,7 @@ void Renderer::Render(const Scene& scene)
             y = ((scene.height - 1 - j + .5f) - scene.height / 2.f) * (2.f * top) / scene.height;
 
             Vector3f dir = Vector3f(x, y, -1); // Don't forget to normalize this direction!
-            framebuffer[m++] = castRay(eye_pos, dir, scene, 0);
+            framebuffer[m++] = castRay(eye_pos, normalize(dir), scene, 0);
         }
         UpdateProgress(j / (float)scene.height);
     }
