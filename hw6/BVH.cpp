@@ -31,9 +31,10 @@ BVHAccel::BVHAccel(std::vector<Object*> p, int maxPrimsInNode,
 
 BVHBuildNode* BVHAccel::recursiveBuild(std::vector<Object*> objects)
 {
+    /*
     if (objects.size() == 0) {
         return nullptr;
-    }
+    }*/
 
     BVHBuildNode* node = new BVHBuildNode();
 
