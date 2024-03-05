@@ -23,7 +23,9 @@ int main(int argc, char** argv)
     Renderer r;
 
     auto start = std::chrono::system_clock::now();
-    r.Render(scene);
+    for (int i = 0; i < 10; ++i) {
+        r.Render(scene);
+    }
     auto stop = std::chrono::system_clock::now();
 
     std::cout << "Render complete: \n";

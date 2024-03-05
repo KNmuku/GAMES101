@@ -1,5 +1,4 @@
 #pragma once
-
 #include "BVH.hpp"
 #include "Intersection.hpp"
 #include "Material.hpp"
@@ -30,11 +29,15 @@ bool rayTriangleIntersect(const Vector3f& v0, const Vector3f& v1,
     v = dotProduct(dir, qvec);
     if (v < 0 || u + v > det)
         return false;
-
     // conserve overhead 
     float invDet = 1 / det;
+    float time = dotProduct(edge2, qvec) * invDet;
 
-    tnear = dotProduct(edge2, qvec) * invDet;
+    
+    if (time <= 0) {
+        return false;
+    }
+    tnear = time;
     u *= invDet;
     v *= invDet;
 
@@ -125,6 +128,8 @@ public:
         for (auto& tri : triangles)
             ptrs.push_back(&tri);
 
+        // in this homework, the whole scene has a bvh which has only one object,
+        // and this object has also its one bvh
         bvh = new BVHAccel(ptrs);
     }
 
@@ -233,8 +238,19 @@ inline Intersection Triangle::getIntersection(Ray ray)
         return inter;
     t_tmp = dotProduct(e2, qvec) * det_inv;
 
-    // TODO find ray triangle intersection
+    if (t_tmp <= 0) {
+        return inter;
+    }
 
+    // TODO find ray triangle intersection
+    inter.happened = true;
+    inter.m = this->m;
+    inter.obj = this;
+    inter.coords = (1- u - v) * v0 + u * v1 + v * v2;
+    inter.normal = normal;
+
+    float ray_dir_len = sqrt(dotProduct(ray.direction, ray.direction));
+    inter.distance = ray_dir_len * t_tmp;
 
 
 

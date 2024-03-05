@@ -132,8 +132,10 @@ Vector3f Scene::castRay(const Ray &ray, int depth) const
                         bool inShadow = bvh->Intersect(Ray(shadowPointOrig, lightDir)).happened;
                         lightAmt += (1 - inShadow) * get_lights()[i]->intensity * LdotN;
                         Vector3f reflectionDirection = reflect(-lightDir, N);
-                        specularColor += powf(std::max(0.f, -dotProduct(reflectionDirection, ray.direction)),
-                                              m->specularExponent) * get_lights()[i]->intensity;
+                        // specularColor += powf(std::max(0.f, -dotProduct(reflectionDirection, ray.direction)),
+                         //                     m->specularExponent) * get_lights()[i]->intensity;
+                        specularColor += (1 - inShadow) * powf(std::max(0.f, -dotProduct(reflectionDirection, ray.direction)),
+                                                m->specularExponent) * get_lights()[i]->intensity;
                     }
                 }
                 hitColor = lightAmt * (hitObject->evalDiffuseColor(st) * m->Kd + specularColor * m->Ks);
