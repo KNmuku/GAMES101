@@ -252,8 +252,6 @@ inline Intersection Triangle::getIntersection(Ray ray)
     float ray_dir_len = sqrt(dotProduct(ray.direction, ray.direction));
     inter.distance = ray_dir_len * t_tmp;
 
-
-
     return inter;
 }
 
