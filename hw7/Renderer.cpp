@@ -5,11 +5,16 @@
 #include <fstream>
 #include "Scene.hpp"
 #include "Renderer.hpp"
+#include <thread>
+#include <mutex>
+#include <algorithm>
 
+using namespace std;
 
-inline float deg2rad(const float& deg) { return deg * M_PI / 180.0; }
+inline double deg2rad(const double& deg) { return deg * M_PI / 180.0; }
 
-const float EPSILON = 0.00001;
+const double EPSILON = 0.001;
+
 
 // The main render function. This where we iterate over all pixels in the image,
 // generate primary rays and cast these rays into the scene. The content of the
@@ -18,30 +23,55 @@ void Renderer::Render(const Scene& scene)
 {
     std::vector<Vector3f> framebuffer(scene.width * scene.height);
 
-    float scale = tan(deg2rad(scene.fov * 0.5));
-    float imageAspectRatio = scene.width / (float)scene.height;
+    double scale = tan(deg2rad(scene.fov * 0.5));
+    double imageAspectRatio = scene.width / (double)scene.height;
     Vector3f eye_pos(278, 273, -800);
-    int m = 0;
+    //int m = 0;
 
     // change the spp value to change sample ammount
-    int spp = 16;
+    int spp = 2800;
     std::cout << "SPP: " << spp << "\n";
-    for (uint32_t j = 0; j < scene.height; ++j) {
-        for (uint32_t i = 0; i < scene.width; ++i) {
-            // generate primary ray direction
-            float x = (2 * (i + 0.5) / (float)scene.width - 1) *
-                      imageAspectRatio * scale;
-            float y = (1 - 2 * (j + 0.5) / (float)scene.height) * scale;
+    int num_thread = 14;
+    int spp_thread = spp / num_thread;
+    vector<thread> threads(num_thread);
 
-            Vector3f dir = normalize(Vector3f(-x, y, 1));
-            for (int k = 0; k < spp; k++){
-                framebuffer[m] += scene.castRay(Ray(eye_pos, dir), 0) / spp;  
+    mutex mtx;
+
+    double process = 0;
+    double unit_process = 1.f / (scene.height * num_thread);
+
+    auto shotRay = [&]() {
+        for (uint32_t j = 0; j < scene.height; ++j) {
+            for (uint32_t i = 0; i < scene.width; ++i) {
+                // generate primary ray direction
+                double x = (2 * (i + 0.5) / (double)scene.width - 1) *
+                          imageAspectRatio * scale;
+                double y = (1 - 2 * (j + 0.5) / (double)scene.height) * scale;
+
+                Vector3f dir = normalize(Vector3f(-x, y, 1));
+                for (int k = 0; k < spp_thread; k++){
+                    framebuffer[scene.width * j + i] += scene.castRay(Ray(eye_pos, dir));  
+                }
             }
-            m++;
+            mtx.lock();
+            process = process + unit_process;
+            UpdateProgress(process);
+            mtx.unlock();
         }
-        UpdateProgress(j / (float)scene.height);
+    };
+
+    for (int i = 0; i < num_thread; ++i) {
+        threads.at(i) = thread(shotRay);
     }
-    UpdateProgress(1.f);
+
+    for (int i = 0; i < num_thread; ++i) {
+        threads.at(i).join();
+    }
+    UpdateProgress(1.0);
+
+    transform(framebuffer.begin(), framebuffer.end(), framebuffer.begin(), [spp](Vector3f & v) {
+        return v / spp;
+    });
 
     // save framebuffer to file
     FILE* fp = fopen("binary.ppm", "wb");

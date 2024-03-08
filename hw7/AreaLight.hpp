@@ -21,12 +21,12 @@ public:
 
     Vector3f SamplePoint() const
     {
-        auto random_u = get_random_float();
-        auto random_v = get_random_float();
+        auto random_u = get_random_double();
+        auto random_v = get_random_double();
         return position + random_u * u + random_v * v;
     }
 
-    float length;
+    double length;
     Vector3f normal;
     Vector3f u;
     Vector3f v;

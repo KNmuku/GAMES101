@@ -28,7 +28,7 @@ public:
     enum class SplitMethod { NAIVE, SAH };
 
     // BVHAccel Public Methods
-    BVHAccel(std::vector<Object*> p, int maxPrimsInNode = 1, SplitMethod splitMethod = SplitMethod::NAIVE);
+    BVHAccel(std::vector<Object*> p, int maxPrimsInNode = 1, SplitMethod splitMethod = SplitMethod::SAH);
     Bounds3 WorldBound() const;
     ~BVHAccel();
 
@@ -45,8 +45,10 @@ public:
     const SplitMethod splitMethod;
     std::vector<Object*> primitives;
 
-    void getSample(BVHBuildNode* node, float p, Intersection &pos, float &pdf);
-    void Sample(Intersection &pos, float &pdf);
+    static const int num_of_buckets = 16;
+
+    void getSample(BVHBuildNode* node, double p, Intersection &pos, double &pdf);
+    void Sample(Intersection &pos, double &pdf);
 };
 
 struct BVHBuildNode {
@@ -54,7 +56,7 @@ struct BVHBuildNode {
     BVHBuildNode *left;
     BVHBuildNode *right;
     Object* object;
-    float area;
+    double area;
 
 public:
     int splitAxis=0, firstPrimOffset=0, nPrimitives=0;
