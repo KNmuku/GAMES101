@@ -1,10 +1,13 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.4)
 project(RopeSim)
 
 #-------------------------------------------------------------------------------
 # Build options
 #-------------------------------------------------------------------------------
 option(BUILD_LIBCGL "Build with libCGL" ON)
+
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
 
 #-------------------------------------------------------------------------------
 # Platform-specific settings

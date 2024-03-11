@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.4)
 
+set(CMAKE_BUILD_TYPE Debug)
+set(CLANG_CXX_FLAGS "${CLANG_CXX_FLAGS} -g -O0")
 # Application source
 set(APPLICATION_SOURCE
     rope.cpp

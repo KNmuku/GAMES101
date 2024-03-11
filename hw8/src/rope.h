@@ -15,6 +15,7 @@ public:
       : masses(masses), springs(springs) {}
   Rope(Vector2D start, Vector2D end, int num_nodes, float node_mass, float k,
        vector<int> pinned_nodes);
+  
 
   void simulateVerlet(float delta_t, Vector2D gravity);
   void simulateEuler(float delta_t, Vector2D gravity);
